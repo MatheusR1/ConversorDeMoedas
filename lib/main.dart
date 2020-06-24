@@ -10,6 +10,16 @@ void main() async {
 
   runApp(MaterialApp(
     home: Home(), // aqui inicializo a home
+    theme: ThemeData(
+        hintColor: Colors.amber,
+        primaryColor: Colors.white,
+        inputDecorationTheme: InputDecorationTheme(
+          enabledBorder:
+              OutlineInputBorder(borderSide: BorderSide(color: Colors.amber)),
+          focusedBorder:
+              OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+          hintStyle: TextStyle(color: Colors.amber),
+        )),
   ));
 }
 
@@ -24,8 +34,48 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final _realcontroller = TextEditingController();
+  final _dollarcontroller = TextEditingController();
+  final _eurocontroller = TextEditingController();
+
   double dollar;
   double euro;
+
+  void _clearAll() {
+    _realcontroller.text = "";
+    _dollarcontroller.text = "";
+    _eurocontroller.text = "";
+  }
+
+  void _realChanged(String text) {
+    if (text.isEmpty) {
+      _clearAll();
+      return;
+    }
+    dynamic real = double.parse(text);
+    _dollarcontroller.text= (real / dollar).toStringAsPrecision(4);
+    _eurocontroller.text = (real / euro).toStringAsPrecision(4);
+  }
+
+  void _dollarChanged(String text) {
+    if (text.isEmpty) {
+      _clearAll();
+      return;
+    }
+    double dollar = double.parse(text);
+    _realcontroller.text = (dollar * this.dollar).toStringAsPrecision(4);
+    _eurocontroller.text = (dollar * this.dollar / euro).toStringAsPrecision(4);
+  }
+
+  void _euroChanged(String text) {
+    if (text.isEmpty) {
+      _clearAll();
+      return;
+    }
+    double euro = double.parse(text);
+    _realcontroller.text = (euro * this.euro).toStringAsPrecision(4);
+    _eurocontroller.text = (euro * this.euro / dollar).toStringAsPrecision(4);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +84,7 @@ class _HomeState extends State<Home> {
       backgroundColor: Colors.black, // cor de dundo do app
       appBar: AppBar(
         // defino a barra
-        title: Text(' \$ converso \$'),
+        title: Text(' \$ Conversor \$'),
         backgroundColor: Colors.amber, // defino a cor da barra
         centerTitle: true, // aqui centralizo o titulo
       ),
@@ -81,17 +131,24 @@ class _HomeState extends State<Home> {
                 ));
               } else {
                 if (snapshot.hasData) {
-
                   dollar = snapshot.data["USD"]["buy"];
                   euro = snapshot.data["EUR"]["buy"];
 
                   return SingleChildScrollView(
+                    padding: EdgeInsets.all(12.00),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
+                      children: [
                         Icon(Icons.monetization_on,
                             size: 150.0, color: Colors.amber),
-                        TextField()
+                        builderTextFielde(
+                            'Reais', 'R\$', _realcontroller, _realChanged),
+                        Divider(),
+                        builderTextFielde('Dólares', 'US\$', _dollarcontroller,
+                            _dollarChanged),
+                        Divider(),
+                        builderTextFielde(
+                            'Euros', '€', _eurocontroller, _euroChanged)
                       ],
                     ),
                   );
@@ -104,4 +161,19 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+}
+
+Widget builderTextFielde(
+    String label, String prefix, TextEditingController c, Function f) {
+  return TextField(
+    controller: c,
+    decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.amber, fontSize: 20.0),
+        border: OutlineInputBorder(),
+        prefixText: prefix),
+    style: TextStyle(color: Colors.amber, fontSize: 25.0),
+    onChanged: f,
+    keyboardType: TextInputType.number,
+  );
 }

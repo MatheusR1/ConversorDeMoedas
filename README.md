@@ -1,6 +1,4 @@
 # Conversor de Moedas em Flutter
 
-![Screenshot](https://user-images.githubusercontent.com/8354309/60233293-135dfb80-9876-11e9-83ea-69414db234bd.png.png)
-
-
+<img src="https://user-images.githubusercontent.com/56950752/85506757-5ce74080-b5c7-11ea-9a0b-24105cd6aeef.png" alt="pyPhone" width="500" height="600">
 
